@@ -77,7 +77,7 @@ class UserController {
             { expiresIn: "24h" }
         );
 
-        res.status(201).send({"msg":"User created","user":user, "token":token})
+        res.status(201).send({"user":user, "token":token})
 
     };
 
@@ -90,6 +90,7 @@ class UserController {
 
         //Try to find user on database
         const userRepository = getRepository(User);
+        const lobbyRepository = getRepository(Lobby);
 
         let user;
         try {
@@ -100,27 +101,18 @@ class UserController {
             return;
         }
 
-        //Validate the new values on model
-        user.email = email;
-        user.nom = nom;
-        user.prenom = prenom;
-        user.pseudo = pseudo;
-        user.password = password;
-        user.dateOfBirth = dateOfBirth;
-        user.dateInscription = dateInscription;
-        user.dateLastConnexion = dateLastConnexion;
-
-        if(idLobby){
-            const lobbyRepository = getRepository(Lobby);
-            const lobby = await lobbyRepository.findOneOrFail(idLobby);
-            user.lobby = lobby;
+        if(password){
+            user.password = req.body.password;
+            req.body.password = user.hashPassword();
         }
 
-        user.hashPassword();
+        if(idLobby){
+            user.lobby = await lobbyRepository.findOneOrFail(idLobby);
+        }
 
         //Try to safe, if fails, that means username already in use
         try {
-            await userRepository.save(user);
+            await userRepository.save({...user, ...req.body });
         } catch (e) {
             res.status(409).send("username already in use");
             return;

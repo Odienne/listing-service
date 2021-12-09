@@ -26,7 +26,7 @@ router.post("/", UserController.newUser);
     [checkJwt],
     UserController.editUser
 );*/
-router.put("/:id([0-9]+)", UserController.editUser);
+router.patch("/:id([0-9]+)", UserController.editUser);
 
 //Delete one user
 /*router.delete(

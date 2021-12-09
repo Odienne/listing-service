@@ -78,20 +78,9 @@ class LobbyController {
 
             const lobby = await lobbyRepository.findOneOrFail(id);
 
-            lobby.description = description;
-            lobby.max_player = max_player;
-            lobby.game_mode = game_mode;
-            lobby.creationDate = creationDate;
-            lobby.statut = statut;
+            await lobbyRepository.save({...lobby, ...req.body });
 
-            /*const errors = await validate(lobby);
-            if (errors.length > 0) {
-                throw errors;
-            }*/
-
-            await lobbyRepository.save(lobby);
-
-            res.status(200).send(lobby);
+            res.status(204).send();
 
         } catch (error) {
             //If not found, send a 404 response
