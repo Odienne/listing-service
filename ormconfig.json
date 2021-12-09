@@ -1,0 +1,23 @@
+{
+   "type": "mysql",
+   "host": "mysql-frenais.alwaysdata.net",
+   "username": "frenais",
+   "password": "Pintagone66690",
+   "database": "frenais_apinodejs",
+   "synchronize": true,
+   "logging": false,
+   "entities": [
+      "src/entity/**/*.ts"
+   ],
+   "migrations": [
+      "src/migration/**/*.ts"
+   ],
+   "subscribers": [
+      "src/subscriber/**/*.ts"
+   ],
+   "cli": {
+      "entitiesDir": "src/entity",
+      "migrationsDir": "src/migration",
+      "subscribersDir": "src/subscriber"
+   }
+}

@@ -1,0 +1,35 @@
+{
+    "name": "API_nodejs",
+    "version": "0.0.1",
+    "description": "Awesome project developed with TypeORM.",
+    "devDependencies": {
+        "@types/node": "^8.0.29",
+        "ts-node": "3.3.0",
+        "ts-node-dev": "^1.1.8",
+        "typescript": "3.3.3333"
+    },
+    "dependencies": {
+        "@types/bcryptjs": "^2.4.2",
+        "@types/body-parser": "^1.19.2",
+        "@types/cors": "^2.8.12",
+        "@types/helmet": "^4.0.0",
+        "@types/jsonwebtoken": "^8.5.6",
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.19.0",
+        "class-validator": "^0.13.2",
+        "cors": "^2.8.5",
+        "express": "^4.17.1",
+        "helmet": "^4.6.0",
+        "jsonwebtoken": "^8.5.1",
+        "mysql": "^2.18.1",
+        "reflect-metadata": "^0.1.13",
+        "sqlite3": "^5.0.2",
+        "typeorm": "^0.2.41"
+    },
+    "scripts": {
+        "tsc": "tsc",
+        "start": "npx ts-node-dev --respawn --transpile-only --debug ./src/index.ts",
+        "prod": "tsc && node ./build/app.js",
+        "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
+    }
+}
