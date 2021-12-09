@@ -10,7 +10,7 @@ class LobbyController {
         const lobbyRepository = getRepository(Lobby);
         const lobbys = await lobbyRepository.find({
             select: ["id", "description", "max_player", "game_mode", "creationDate", "statut"],
-            relations: ["userLobbys"]
+            relations: ["users"]
         });
 
         res.send(lobbys);
@@ -24,7 +24,7 @@ class LobbyController {
         try {
             const lobby = await lobbyRepository.findOneOrFail(id, {
                 select: ["id", "description", "max_player", "game_mode", "creationDate", "statut"],
-                relations: ["userLobbys"]
+                relations: ["users"]
             });            
             res.status(200).send(lobby);
         } catch (error) {
@@ -42,8 +42,7 @@ class LobbyController {
         lobby.max_player = max_player;
         lobby.game_mode = game_mode;
         lobby.creationDate = creationDate;
-        lobby.statut = statut;
-        
+        lobby.statut = statut;        
 
         //Validade if the parameters are ok
         const errors = await validate(lobby);
@@ -119,37 +118,7 @@ class LobbyController {
         //After all send a 204 (no content, but accepted) response
         res.status(200).send("Lobby with id : "+id+" deleted");
     };
-
-    /*static getLobbyDraftByUser = async (req: Request, res: Response) => {
-        //Get the ID from the url
-        const id = req.params.id;
-
-        const lobbyRepository = getRepository(Lobby);
-        
-        const userRepository = getRepository(User);
-
-        try {
-            const lobby = await lobbyRepository.findOneOrFail({relations: ["lobbyArticles", "user"], where : { userId:id, status:"Brouillon" }});             
-            res.status(200).send(lobby);
-        } catch (error) {
-
-            let lobby = new Lobby();
-            lobby.status = 'Brouillon';
-            lobby.numLobby = Math.floor(Math.random() * Math.floor(99999999999)).toString();
-
-            const user = await userRepository.findOneOrFail(id);
-
-            lobby.user = user;
-
-            await lobbyRepository.save(lobby);
-
-            res.status(200).send(lobby);
-            return
-        }       
-        
-    }*/
-
-    // Create method for change reference like change password user
+    
 };
 
 export default LobbyController;

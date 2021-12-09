@@ -5,11 +5,12 @@ import {
     Unique,
     CreateDateColumn,
     UpdateDateColumn,
-    OneToMany
+    OneToMany,
+    ManyToOne
 } from "typeorm";
 import { Length, IsNotEmpty } from "class-validator";
 import * as bcrypt from "bcryptjs";
-import { UserLobbys } from "./UserLobbys";
+import { Lobby } from "./Lobby";
 
 @Entity()
 @Unique(["email"])
@@ -68,8 +69,8 @@ export class User {
     @UpdateDateColumn()
     updatedAt: Date;
     
-    @OneToMany(type => UserLobbys, userLobbys => userLobbys.user)
-    userLobbys: UserLobbys[];
+    @ManyToOne(() => Lobby, lobby => lobby.users)
+    lobby: Lobby;
 
     hashPassword() {
         this.password = bcrypt.hashSync(this.password, 8);

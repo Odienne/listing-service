@@ -10,7 +10,7 @@ import {
     JoinTable
 } from "typeorm";
 import { Length, IsNotEmpty } from "class-validator";
-import { UserLobbys } from "./UserLobbys";
+import { User } from "./User";
 
 @Entity()
 export class Lobby {
@@ -43,7 +43,7 @@ export class Lobby {
     @UpdateDateColumn()
     updatedAt: Date;
     
-    @OneToMany(type => UserLobbys, userLobbys => userLobbys.lobby)
-    userLobbys: UserLobbys[];
+    @OneToMany(() => User, user => user.lobby)
+    users: User[];
 
 }

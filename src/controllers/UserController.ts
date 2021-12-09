@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { validate } from "class-validator";
 import * as jwt from "jsonwebtoken";
-
 import { User } from "../entity/User";
 import config from "../config/config";
+import { Lobby } from "../entity/Lobby";
 
 class UserController {
 
@@ -13,7 +13,7 @@ class UserController {
         const userRepository = getRepository(User);
         const users = await userRepository.find({
             select: ["id", "email", "nom", "prenom", "pseudo", "dateOfBirth", "dateInscription", "dateLastConnexion"],
-            relations: ["userLobbys", "lobby"]
+            relations: ["lobby"]
         });
 
         //Send the users object
@@ -29,7 +29,7 @@ class UserController {
         try {
             const user = await userRepository.findOneOrFail(id, {
                 select: ["id", "email", "nom", "prenom", "pseudo", "dateOfBirth", "dateInscription", "dateLastConnexion"],
-                relations: ["userLobbys", "lobby"]
+                relations: ["lobby"]
             });
             res.status(200).send(user);
         } catch (error) {
@@ -67,7 +67,7 @@ class UserController {
         try {
             await userRepository.save(user);
         } catch (e) {
-            res.status(409).send("username already in use");
+            res.status(409).send(e.message);
             return;
         }
 
@@ -85,9 +85,8 @@ class UserController {
         
         //Get the ID from the url
         const id = req.params.id;
-
         //Get values from the body
-        let { email, nom, prenom, pseudo, password, dateOfBirth, dateInscription, dateLastConnexion} = req.body;
+        let { email, nom, prenom, pseudo, password, dateOfBirth, dateInscription, dateLastConnexion, idLobby} = req.body;
 
         //Try to find user on database
         const userRepository = getRepository(User);
@@ -110,6 +109,9 @@ class UserController {
         user.dateOfBirth = dateOfBirth;
         user.dateInscription = dateInscription;
         user.dateLastConnexion = dateLastConnexion;
+        const lobbyRepository = getRepository(Lobby);
+        const lobby = await lobbyRepository.findOneOrFail(idLobby);
+        user.lobby = lobby;
 
         user.hashPassword();
 
