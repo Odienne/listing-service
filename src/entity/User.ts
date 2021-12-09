@@ -5,12 +5,13 @@ import {
     Unique,
     CreateDateColumn,
     UpdateDateColumn,
-    OneToMany,
-    ManyToOne
+    ManyToOne,
+    OneToMany
 } from "typeorm";
 import { Length, IsNotEmpty } from "class-validator";
 import * as bcrypt from "bcryptjs";
 import { Lobby } from "./Lobby";
+import { UserGames } from "./UserGames";
 
 @Entity()
 @Unique(["email"])
@@ -68,6 +69,9 @@ export class User {
     @Column()
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToMany(() => UserGames, userGames => userGames.game)
+    public userGames: UserGames[];
     
     @ManyToOne(() => Lobby, lobby => lobby.users)
     lobby: Lobby;

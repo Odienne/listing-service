@@ -4,15 +4,23 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn, 
-    OneToMany
+    OneToOne,
+    OneToMany,
+    JoinColumn,
+    ManyToMany,
+    JoinTable
 } from "typeorm";
 import { User } from "./User";
+import { UserGames } from "./UserGames";
 
 @Entity()
-export class Lobby {
+export class Game {
 
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column()
+    name: string;
 
     @Column({
         length: 500
@@ -20,16 +28,10 @@ export class Lobby {
     description: string;
 
     @Column()
-    max_player: number;
-    
-    @Column()
-    game_mode: string;
-
-    @Column()
-    creationDate: Date;
-
-    @Column()
     statut: string;
+
+    @Column()
+    tour: number;
 
     @Column()
     @CreateDateColumn()
@@ -39,7 +41,11 @@ export class Lobby {
     @UpdateDateColumn()
     updatedAt: Date;
     
-    @OneToMany(() => User, user => user.lobby)
-    users: User[];
+    @OneToMany(() => UserGames, userGames => userGames.user)
+    public userGames: UserGames[];
+
+    @OneToOne(() => User)
+    @JoinColumn()
+    juge: User;
 
 }

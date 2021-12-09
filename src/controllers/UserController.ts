@@ -95,28 +95,21 @@ class UserController {
         let user;
         try {
             user = await userRepository.findOneOrFail(id);
+            if(password){
+                user.password = req.body.password;
+                req.body.password = user.hashPassword();
+            }
+    
+            if(idLobby){
+                user.lobby = await lobbyRepository.findOneOrFail(idLobby);
+            }
+            await userRepository.save({...user, ...req.body });
         } catch (error) {
             //If not found, send a 404 response
-            res.status(404).send("User not found");
+            res.status(404).send({"error":error.message});
             return;
         }
 
-        if(password){
-            user.password = req.body.password;
-            req.body.password = user.hashPassword();
-        }
-
-        if(idLobby){
-            user.lobby = await lobbyRepository.findOneOrFail(idLobby);
-        }
-
-        //Try to safe, if fails, that means username already in use
-        try {
-            await userRepository.save({...user, ...req.body });
-        } catch (e) {
-            res.status(409).send("username already in use");
-            return;
-        }
         //After all send a 204 (no content, but accepted) response
         res.status(204).send();
     };
