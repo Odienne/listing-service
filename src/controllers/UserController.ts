@@ -109,9 +109,12 @@ class UserController {
         user.dateOfBirth = dateOfBirth;
         user.dateInscription = dateInscription;
         user.dateLastConnexion = dateLastConnexion;
-        const lobbyRepository = getRepository(Lobby);
-        const lobby = await lobbyRepository.findOneOrFail(idLobby);
-        user.lobby = lobby;
+
+        if(idLobby){
+            const lobbyRepository = getRepository(Lobby);
+            const lobby = await lobbyRepository.findOneOrFail(idLobby);
+            user.lobby = lobby;
+        }
 
         user.hashPassword();
 
