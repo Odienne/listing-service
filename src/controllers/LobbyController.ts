@@ -9,7 +9,7 @@ class LobbyController {
 
         const lobbyRepository = getRepository(Lobby);
         const lobbys = await lobbyRepository.find({
-            select: ["id", "description", "max_player", "game_mode", "creationDate", "statut"],
+            select: ["id", "description", "max_player", "game_mode", "status", "created_date", "updatedAt"],
             relations: ["users"]
         });
 
@@ -23,12 +23,12 @@ class LobbyController {
         const lobbyRepository = getRepository(Lobby);
         try {
             const lobby = await lobbyRepository.findOneOrFail(id, {
-                select: ["id", "description", "max_player", "game_mode", "creationDate", "statut"],
+                select: ["id", "description", "max_player", "game_mode", "status", "created_date", "updatedAt"],
                 relations: ["users"]
             });            
             res.status(200).send(lobby);
         } catch (error) {
-            res.status(404).send("Lobby not found");
+            res.status(404).send({"error": error.message});
             return
         }        
     };
@@ -36,13 +36,13 @@ class LobbyController {
     static newLobby = async (req: Request, res: Response) => {
 
         //Get parameters from the body
-        let { description, max_player, game_mode, creationDate, statut } = req.body;
+        let { description, max_player, game_mode, created_date, status } = req.body;
         let lobby = new Lobby();
         lobby.description = description;
         lobby.max_player = max_player;
         lobby.game_mode = game_mode;
-        lobby.creationDate = creationDate;
-        lobby.statut = statut;        
+        lobby.created_date = created_date;
+        lobby.status = status;        
 
         //Validade if the parameters are ok
         const errors = await validate(lobby);
@@ -61,7 +61,7 @@ class LobbyController {
         }
 
         //If all ok, send 201 response
-        res.status(201).send({"msg":"Lobby created","Lobby":lobby});
+        res.status(201).send({"lobby":lobby});
     };
 
     static editLobby = async (req: Request, res: Response) => {
@@ -70,7 +70,7 @@ class LobbyController {
         const id = req.params.id;
 
         //Get values from the body
-        const { description, max_player, game_mode, creationDate, statut } = req.body;
+        const { description, max_player, game_mode, created_date, status } = req.body;
 
         //Try to find user on database
         const lobbyRepository = getRepository(Lobby);
@@ -98,11 +98,11 @@ class LobbyController {
         let lobby: Lobby;
         try {
             lobby = await lobbyRepository.findOneOrFail(id);
+            lobbyRepository.delete(id);
         } catch (error) {
-            res.status(404).send("Lobby not found");
+            res.status(404).send({"error": error});
             return;
         }
-        lobbyRepository.delete(id);
 
         //After all send a 204 (no content, but accepted) response
         res.status(200).send("Lobby with id : "+id+" deleted");

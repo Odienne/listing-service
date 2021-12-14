@@ -5,12 +5,14 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     ManyToOne,
+    Unique,
 } from "typeorm";
 import { Game } from "./Game";
 import { User } from "./User";
 
 @Entity()
-export class UserGames {
+@Unique("user_game", ["user", "game"])
+export class User_Game {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -18,12 +20,13 @@ export class UserGames {
     @Column("double")
     score: number;
 
-    @ManyToOne(type => Game, game => game.userGames, {
+    @ManyToOne(type => Game, game => game.user_game, {
+        onDelete: "CASCADE",
         eager: true
     })
     game: Game;
 
-    @ManyToOne(type => User, user => user.userGames, {
+    @ManyToOne(type => User, user => user.user_game, {
         eager: true
     })
     user: User;
