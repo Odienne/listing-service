@@ -3,12 +3,11 @@ import { getRepository } from "typeorm";
 import { validate } from "class-validator";
 import { Game } from "../entity/Game";
 import { User } from "../entity/User";
-<<<<<<< HEAD
 import { Media } from "../entity/Media";
-=======
 import { User_Game } from "../entity/User_Game";
 import { ConflictException } from "@nestjs/common";
->>>>>>> e698bfab9c92369ee90462705153c1eaaec4aef1
+import { Game_User_Proposition } from "../entity/Game_User_Proposition";
+import { Proposition } from "../entity/Proposition";
 
 class GameController {
 
@@ -17,11 +16,11 @@ class GameController {
         const gameRepository = getRepository(Game);
         const games = await gameRepository.find({
             select: ["id", "name", "description", "status", "tour", "createdAt", "updatedAt"],
-            relations: ["juge", "user_game"]
+            relations: ["juge", "user_game", "user_game.game_user_proposition", "media"]
         });
 
         //Send the users object
-        res.send(games);
+        res.send({"games":games});
     };
 
     static getOneById = async (req: Request, res: Response) => {
@@ -32,9 +31,9 @@ class GameController {
         try {
             const game = await gameRepository.findOneOrFail(id, {
                 select: ["id", "name", "description", "status", "tour", "createdAt", "updatedAt"],
-                relations: ["juge", "user_game"]
+                relations: ["juge", "user_game", "user_game.game_user_proposition", "media"]
             });
-            res.status(200).send(game);
+            res.status(200).send({"game": game});
         } catch (error) {
             res.status(404).send({"error" : error.message});
         }
@@ -62,12 +61,11 @@ class GameController {
         const gameRepository = getRepository(Game);
         try {
             await gameRepository.save(game);
+             res.status(201).send({"game":game})
         } catch (error) {
             res.status(409).send({"error": error.message});
             return;
         }
-
-        res.status(201).send({"game":game})
 
     };
 
@@ -76,20 +74,15 @@ class GameController {
         //Get the ID from the url
         const id = req.params.id;
         //Get values from the body
-<<<<<<< HEAD
-        let { name, description, statut, tour, idJuge, idUser, idMedia } = req.body;
-=======
-        let { name, description, status, tour, idJuge, idUser } = req.body;
->>>>>>> e698bfab9c92369ee90462705153c1eaaec4aef1
+        let { name, description, statut, tour, idJuge, idUser, idMedia, idUserGame, idProposition } = req.body;
 
         //Try to find game on database
         const gameRepository = getRepository(Game);
         const userRepository = getRepository(User);
-<<<<<<< HEAD
         const mediaRepository = getRepository(Media);
-=======
         const user_gameRepository = getRepository(User_Game);
->>>>>>> e698bfab9c92369ee90462705153c1eaaec4aef1
+        const propositionRepository = getRepository(Proposition);
+        const game_user_propositionRepository = getRepository(Game_User_Proposition);
 
         let game;
         try {
@@ -118,6 +111,12 @@ class GameController {
             if(idMedia){
                 game.media = await mediaRepository.findOneOrFail(idMedia);
             }
+            if(idUserGame && idProposition){
+                let game_user_proposition = new Game_User_Proposition();
+                game_user_proposition.user_game = await user_gameRepository.findOneOrFail(idUserGame);
+                game_user_proposition.proposition = await propositionRepository.findOneOrFail(idProposition);
+                game_user_propositionRepository.save(game_user_proposition)
+            }
             await gameRepository.save({...game, ...req.body });
 
             res.status(204).send();
@@ -136,13 +135,13 @@ class GameController {
         try {
             game = await gameRepository.findOneOrFail(id);
             gameRepository.delete(id);
+            //After all send a 204 (no content, but accepted) response
+            res.status(200).send("Game with id : "+id+" deleted");
         } catch (error) {
             res.status(404).send({"error": error.message});
             return;
         }
 
-        //After all send a 204 (no content, but accepted) response
-        res.status(200).send("Game with id : "+id+" deleted");
     };
 };
 

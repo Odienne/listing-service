@@ -17,11 +17,11 @@ class User_TrophyController {
         try {
             user_trophy = await user_trophyRepository.findOneOrFail(id);
             await user_trophyRepository.delete(id);
+            res.status(200).send({"message":"User_Trophy with id : "+id+" deleted"});
         } catch (error) {
             res.status(404).send({error: error.message});
             return;
         }
-        res.status(200).send({"message":"User_Trophy with id : "+id+" deleted"});
     }
 
     static editUser_Trophy = async (req: Request, res: Response) => {
@@ -78,7 +78,7 @@ class User_TrophyController {
                 select: ["id", "obtention_date", "createdAt", "updatedAt"],
                 relations: ["user", "trophy"] //We dont want to send the password on response
             });            
-            res.status(200).send(user_trophy);
+            res.status(200).send({"User_Trophy": user_trophy});
         } catch (error) {
             res.status(404).send("TrophyUser not found");
             return

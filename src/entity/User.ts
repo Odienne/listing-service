@@ -13,6 +13,7 @@ import * as bcrypt from "bcryptjs";
 import { Lobby } from "./Lobby";
 import { User_Game } from "./User_Game";
 import { User_Trophy } from "./User_Trophy";
+import { Game_User_Proposition } from "./Game_User_Proposition";
 
 @Entity()
 @Unique(["email"])

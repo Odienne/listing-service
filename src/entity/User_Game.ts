@@ -6,8 +6,11 @@ import {
     UpdateDateColumn,
     ManyToOne,
     Unique,
+    OneToMany,
 } from "typeorm";
 import { Game } from "./Game";
+import { Game_User_Proposition } from "./Game_User_Proposition";
+import { Proposition } from "./Proposition";
 import { User } from "./User";
 
 @Entity()
@@ -30,6 +33,9 @@ export class User_Game {
         eager: true
     })
     user: User;
+
+    @OneToMany(() => Game_User_Proposition, game_user_proposition => game_user_proposition.user_game)
+    public game_user_proposition: Game_User_Proposition[];
 
     @Column()
     @CreateDateColumn()

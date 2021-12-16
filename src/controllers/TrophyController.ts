@@ -13,7 +13,7 @@ class TrophyController {
             relations: ["user_trophy"]
         });
 
-        res.send(trophys);
+        res.send({"trophies": trophys});
     };
 
     static getOneById = async (req: Request, res: Response) => {
@@ -26,7 +26,7 @@ class TrophyController {
                 select: ["id", "name", "icon", "description", "createdAt", "updatedAt"],
                 relations: ["user_trophy"]
             });            
-            res.status(200).send(trophy);
+            res.status(200).send({"trophy": trophy});
         } catch (error) {
             res.status(404).send({"error": error.message});
             return
@@ -54,13 +54,13 @@ class TrophyController {
         const trophyRepository = getRepository(Trophy);
         try {
             await trophyRepository.save(trophy);
+            //If all ok, send 201 response
+            res.status(201).send({"trophy":trophy});
         } catch (e) {
             res.status(409).send("Trophy reference already in use");
             return;
         }
 
-        //If all ok, send 201 response
-        res.status(201).send({"trophy":trophy});
     };
 
     static editTrophy = async (req: Request, res: Response) => {
@@ -98,13 +98,13 @@ class TrophyController {
         try {
             trophy = await trophyRepository.findOneOrFail(id);
             trophyRepository.delete(id);
+            //After all send a 204 (no content, but accepted) response
+            res.status(200).send("Trophy with id : "+id+" deleted");
         } catch (error) {
             res.status(404).send({"error": error});
             return;
         }
 
-        //After all send a 204 (no content, but accepted) response
-        res.status(200).send("Trophy with id : "+id+" deleted");
     };
     
 };

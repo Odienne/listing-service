@@ -13,7 +13,7 @@ class LobbyController {
             relations: ["users"]
         });
 
-        res.send(lobbys);
+        res.send({"lobbies":lobbys});
     };
 
     static getOneById = async (req: Request, res: Response) => {
@@ -26,7 +26,7 @@ class LobbyController {
                 select: ["id", "description", "max_player", "game_mode", "status", "created_date", "updatedAt"],
                 relations: ["users"]
             });            
-            res.status(200).send(lobby);
+            res.status(200).send({"lobby":lobby});
         } catch (error) {
             res.status(404).send({"error": error.message});
             return
@@ -55,13 +55,13 @@ class LobbyController {
         const lobbyRepository = getRepository(Lobby);
         try {
             await lobbyRepository.save(lobby);
+            //If all ok, send 201 response
+            res.status(201).send({"lobby":lobby});
         } catch (e) {
             res.status(409).send("Lobby reference already in use");
             return;
         }
 
-        //If all ok, send 201 response
-        res.status(201).send({"lobby":lobby});
     };
 
     static editLobby = async (req: Request, res: Response) => {
@@ -99,13 +99,12 @@ class LobbyController {
         try {
             lobby = await lobbyRepository.findOneOrFail(id);
             lobbyRepository.delete(id);
+            //After all send a 204 (no content, but accepted) response
+            res.status(200).send("Lobby with id : "+id+" deleted");
         } catch (error) {
             res.status(404).send({"error": error});
             return;
         }
-
-        //After all send a 204 (no content, but accepted) response
-        res.status(200).send("Lobby with id : "+id+" deleted");
     };
     
 };

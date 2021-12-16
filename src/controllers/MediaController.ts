@@ -15,7 +15,7 @@ class MediaController {
         });
 
         //Send the users object
-        res.send(medias);
+        res.send({"medias": medias});
     };
 
     static getOneById = async (req: Request, res: Response) => {
@@ -29,9 +29,9 @@ class MediaController {
                 select: ["id", "url"],
                 relations: ["games"]
             });
-            res.status(200).send(media);
+            res.status(200).send({"media": media});
         } catch (error) {
-            res.status(404).send("Media not found");
+            res.status(404).send({"error":error.message});
         }
     };
 
@@ -54,12 +54,11 @@ class MediaController {
         const mediaRepository = getRepository(Media);
         try {
             await mediaRepository.save(media);
+            res.status(201).send({"media":media})
         } catch (e) {
             res.status(409).send(e.message);
             return;
         }
-
-        res.status(201).send({"media":media})
 
     };
 
@@ -95,13 +94,13 @@ class MediaController {
         let media: Media;
         try {
             media = await mediaRepository.findOneOrFail(id);
+            mediaRepository.delete(id);
             //After all send a 204 (no content, but accepted) response
             res.status(200).send("Media with id : "+id+" deleted");
         } catch (error) {
             res.status(404).send("Media not found");
             return;
         }
-        mediaRepository.delete(id);
     };
 };
 

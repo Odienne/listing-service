@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6a925455-9010-421a-af1e-83e5b87c2d3e",
+		"_postman_id": "44a56a3e-b8e1-4308-9c23-51f382aae023",
 		"name": "meme-me",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -76,7 +76,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"idUser\":1\r\n}",
+							"raw": "{\r\n    \"idUserGame\": 1,\r\n    \"idProposition\":2\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -168,7 +168,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": ""
+							"raw": "localhost:3000/games",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"games"
+							]
 						}
 					},
 					"response": []
@@ -265,6 +272,139 @@
 							"path": [
 								"trophies",
 								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Media",
+			"item": [
+				{
+					"name": "Get",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/medias",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"medias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/medias/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"medias",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"url\":\"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/medias",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"medias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"url\":\"testEdit\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/medias/1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"medias",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Proposition",
+			"item": [
+				{
+					"name": "Post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\":\"test\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/propositions",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"propositions"
 							]
 						}
 					},

@@ -17,11 +17,11 @@ class User_GameController {
         try {
             user_game = await user_gameRepository.findOneOrFail(id);
             await user_gameRepository.delete(id);
+            res.status(200).send({"message":"GameUser with id : "+id+" deleted"});
         } catch (error) {
             res.status(404).send({error: error.message});
             return;
         }
-        res.status(200).send({"message":"GameUser with id : "+id+" deleted"});
     }
 
     static editUser_Game = async (req: Request, res: Response) => {
@@ -58,7 +58,7 @@ class User_GameController {
 
             await gameRepository.save({...user_game, ...req.body });
 
-            res.status(200).send(user_game);
+            res.status(204).send();
 
         } catch (error) {
             //If not found, send a 404 response
@@ -76,11 +76,11 @@ class User_GameController {
         try {
             const user_game = await user_gameRepository.findOneOrFail(id, {
                 select: ["id", "score", "createdAt", "updatedAt"],
-                relations: ["user", "game"] //We dont want to send the password on response
+                relations: ["user", "game", "game_user_proposition"] //We dont want to send the password on response
             });            
-            res.status(200).send(user_game);
+            res.status(200).send({"User_Game": user_game});
         } catch (error) {
-            res.status(404).send("GameUser not found");
+            res.status(404).send({"error": error.message});
             return
         }        
     };

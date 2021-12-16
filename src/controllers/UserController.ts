@@ -34,7 +34,7 @@ class UserController {
                 select: ["id", "email", "nom", "prenom", "pseudo", "birthday_date", "inscription_date", "last_connexion", "createdAt", "updatedAt"],
                 relations: ["lobby", "user_trophy", "user_game"]
             });
-            res.status(200).send(user);
+            res.status(200).send({"user": user});
         } catch (error) {
             res.status(404).send({"error": error.message});
         }
@@ -69,18 +69,18 @@ class UserController {
         const userRepository = getRepository(User);
         try {
             await userRepository.save(user);
+
+            const token = jwt.sign(
+                { userId: user.id, email: user.email },
+                config.jwtSecret,
+                { expiresIn: "24h" }
+            );
+    
+            res.status(201).send({"user":user, "token":token})
         } catch (error) {
             res.status(409).send({"error": error.message});
             return;
         }
-
-        const token = jwt.sign(
-            { userId: user.id, email: user.email },
-            config.jwtSecret,
-            { expiresIn: "24h" }
-        );
-
-        res.status(201).send({"user":user, "token":token})
 
     };
 
@@ -129,14 +129,14 @@ class UserController {
                 user_trophyRepository.save(user_trophy)
             }
             await userRepository.save({...user, ...req.body });
+
+            //After all send a 204 (no content, but accepted) response
+            res.status(204).send();
         } catch (error) {
             //If not found, send a 404 response
             res.status(404).send({"error":error.message});
             return;
         }
-
-        //After all send a 204 (no content, but accepted) response
-        res.status(204).send();
     };
 
     static deleteUser = async (req: Request, res: Response) => {
@@ -148,13 +148,13 @@ class UserController {
         try {
             user = await userRepository.findOneOrFail(id);
             userRepository.delete(id);
+
+            //After all send a 204 (no content, but accepted) response
+            res.status(200).send("User with id : "+id+" deleted");
         } catch (error) {
             res.status(404).send({"error": error.message});
             return;
         }
-
-        //After all send a 204 (no content, but accepted) response
-        res.status(200).send("User with id : "+id+" deleted");
     };
 };
 

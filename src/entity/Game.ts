@@ -9,6 +9,7 @@ import {
     JoinColumn,
     ManyToOne
 } from "typeorm";
+import { Game_User_Proposition } from "./Game_User_Proposition";
 import { Media } from "./Media";
 import { User } from "./User";
 import { User_Game } from "./User_Game";
