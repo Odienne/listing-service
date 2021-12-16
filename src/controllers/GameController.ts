@@ -3,6 +3,7 @@ import { getRepository } from "typeorm";
 import { validate } from "class-validator";
 import { Game } from "../entity/Game";
 import { User } from "../entity/User";
+import { Media } from "../entity/Media";
 
 class GameController {
 
@@ -71,11 +72,12 @@ class GameController {
         //Get the ID from the url
         const id = req.params.id;
         //Get values from the body
-        let { name, description, statut, tour, idJuge, idUser } = req.body;
+        let { name, description, statut, tour, idJuge, idUser, idMedia } = req.body;
 
         //Try to find game on database
         const gameRepository = getRepository(Game);
         const userRepository = getRepository(User);
+        const mediaRepository = getRepository(Media);
 
         let game;
         try {
@@ -87,6 +89,9 @@ class GameController {
             if(idUser){
                 // TODO UserGames controller
                 game.userGames = [await userRepository.findOneOrFail(idUser)];
+            }
+            if(idMedia){
+                game.media = await mediaRepository.findOneOrFail(idMedia);
             }
             await gameRepository.save({...game, ...req.body });
         } catch (error) {

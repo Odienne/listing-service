@@ -7,9 +7,9 @@ import {
     OneToOne,
     OneToMany,
     JoinColumn,
-    ManyToMany,
-    JoinTable
+    ManyToOne
 } from "typeorm";
+import { Media } from "./Media";
 import { User } from "./User";
 import { UserGames } from "./UserGames";
 
@@ -47,5 +47,8 @@ export class Game {
     @OneToOne(() => User)
     @JoinColumn()
     juge: User;
+
+    @ManyToOne(() => Media, media => media.games)
+    media: Media;
 
 }

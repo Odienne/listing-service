@@ -3,12 +3,14 @@ import auth from "./auth";
 import user from "./user";
 import lobby from "./lobby";
 import game from "./game";
+import media from "./media";
 
 const routes = Router();
 
 //routes.use("/auth", auth);
-routes.use("/user", user);
-routes.use("/lobby", lobby);
-routes.use("/game", game);
+routes.use("/users", user);
+routes.use("/lobbies", lobby);
+routes.use("/games", game);
+routes.use("/medias", media);
 
 export default routes;
