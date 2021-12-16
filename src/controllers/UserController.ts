@@ -5,6 +5,9 @@ import * as jwt from "jsonwebtoken";
 import { User } from "../entity/User";
 import config from "../config/config";
 import { Lobby } from "../entity/Lobby";
+import { ConflictException } from "@nestjs/common";
+import { User_Trophy } from "../entity/User_Trophy";
+import { Trophy } from "../entity/Trophy";
 
 class UserController {
 
@@ -12,8 +15,8 @@ class UserController {
         //Get users from database
         const userRepository = getRepository(User);
         const users = await userRepository.find({
-            select: ["id", "email", "nom", "prenom", "pseudo", "dateOfBirth", "dateInscription", "dateLastConnexion"],
-            relations: ["lobby"]
+            select: ["id", "email", "nom", "prenom", "pseudo", "birthday_date", "inscription_date", "last_connexion", "createdAt", "updatedAt"],
+            relations: ["lobby", "user_trophy", "user_game"]
         });
 
         //Send the users object
@@ -28,18 +31,18 @@ class UserController {
         const userRepository = getRepository(User);
         try {
             const user = await userRepository.findOneOrFail(id, {
-                select: ["id", "email", "nom", "prenom", "pseudo", "dateOfBirth", "dateInscription", "dateLastConnexion"],
-                relations: ["lobby"]
+                select: ["id", "email", "nom", "prenom", "pseudo", "birthday_date", "inscription_date", "last_connexion", "createdAt", "updatedAt"],
+                relations: ["lobby", "user_trophy", "user_game"]
             });
             res.status(200).send(user);
         } catch (error) {
-            res.status(404).send("User not found");
+            res.status(404).send({"error": error.message});
         }
     };
 
     static newUser = async (req: Request, res: Response) => {
         //Get parameters from the body
-        let { email, nom, prenom, pseudo, password, dateOfBirth, dateInscription, dateLastConnexion} = req.body;
+        let { email, nom, prenom, pseudo, password, birthday_date, inscription_date, last_connexion} = req.body;
 
         let user = new User();
 
@@ -48,9 +51,9 @@ class UserController {
         user.prenom = prenom;
         user.pseudo = pseudo;
         user.password = password;
-        user.dateOfBirth = dateOfBirth;
-        user.dateInscription = dateInscription;
-        user.dateLastConnexion = dateLastConnexion;
+        user.birthday_date = birthday_date;
+        user.inscription_date = inscription_date;
+        user.last_connexion = last_connexion;
 
         //Validade if the parameters are ok
         const errors = await validate(user);
@@ -66,8 +69,8 @@ class UserController {
         const userRepository = getRepository(User);
         try {
             await userRepository.save(user);
-        } catch (e) {
-            res.status(409).send(e.message);
+        } catch (error) {
+            res.status(409).send({"error": error.message});
             return;
         }
 
@@ -86,15 +89,23 @@ class UserController {
         //Get the ID from the url
         const id = req.params.id;
         //Get values from the body
-        let { email, nom, prenom, pseudo, password, dateOfBirth, dateInscription, dateLastConnexion, idLobby} = req.body;
+        let { email, nom, prenom, pseudo, password, birthday_date, inscription_date, last_connexion, idLobby, idTrophy} = req.body;
 
         //Try to find user on database
         const userRepository = getRepository(User);
         const lobbyRepository = getRepository(Lobby);
+        const trophyRepository = getRepository(Trophy);
+        const user_trophyRepository = getRepository(User_Trophy);
 
         let user;
+
         try {
-            user = await userRepository.findOneOrFail(id);
+            
+            user = await userRepository.findOneOrFail(id, {
+                select: ["id", "email", "nom", "prenom", "pseudo", "birthday_date", "inscription_date", "last_connexion", "createdAt", "updatedAt"],
+                relations: ["lobby", "user_trophy", "user_game"]
+            });
+
             if(password){
                 user.password = req.body.password;
                 req.body.password = user.hashPassword();
@@ -102,6 +113,20 @@ class UserController {
     
             if(idLobby){
                 user.lobby = await lobbyRepository.findOneOrFail(idLobby);
+            }
+            if(idTrophy){
+
+                var result = user.user_trophy.filter(user_trophy => user_trophy.trophy.id == idTrophy);
+
+                if(result.length != 0){
+                    throw new ConflictException('User_Trophy already exist');
+                }
+                
+                let user_trophy = new User_Trophy();
+                user_trophy.trophy = await trophyRepository.findOneOrFail(idTrophy);
+                user_trophy.user = user;
+                user_trophy.obtention_date = new Date();
+                user_trophyRepository.save(user_trophy)
             }
             await userRepository.save({...user, ...req.body });
         } catch (error) {
@@ -122,11 +147,11 @@ class UserController {
         let user: User;
         try {
             user = await userRepository.findOneOrFail(id);
+            userRepository.delete(id);
         } catch (error) {
-            res.status(404).send("User not found");
+            res.status(404).send({"error": error.message});
             return;
         }
-        userRepository.delete(id);
 
         //After all send a 204 (no content, but accepted) response
         res.status(200).send("User with id : "+id+" deleted");

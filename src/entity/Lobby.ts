@@ -26,14 +26,11 @@ export class Lobby {
     game_mode: string;
 
     @Column()
-    creationDate: Date;
-
-    @Column()
-    statut: string;
+    status: string;
 
     @Column()
     @CreateDateColumn()
-    createdAt: Date;
+    created_date: Date;
 
     @Column()
     @UpdateDateColumn()

@@ -11,7 +11,7 @@ import {
 } from "typeorm";
 import { Media } from "./Media";
 import { User } from "./User";
-import { UserGames } from "./UserGames";
+import { User_Game } from "./User_Game";
 
 @Entity()
 export class Game {
@@ -28,7 +28,7 @@ export class Game {
     description: string;
 
     @Column()
-    statut: string;
+    status: string;
 
     @Column()
     tour: number;
@@ -41,8 +41,8 @@ export class Game {
     @UpdateDateColumn()
     updatedAt: Date;
     
-    @OneToMany(() => UserGames, userGames => userGames.user)
-    public userGames: UserGames[];
+    @OneToMany(() => User_Game, user_game => user_game.user)
+    public user_game: User_Game[];
 
     @OneToOne(() => User)
     @JoinColumn()

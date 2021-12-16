@@ -11,7 +11,8 @@ import {
 import { Length, IsNotEmpty } from "class-validator";
 import * as bcrypt from "bcryptjs";
 import { Lobby } from "./Lobby";
-import { UserGames } from "./UserGames";
+import { User_Game } from "./User_Game";
+import { User_Trophy } from "./User_Trophy";
 
 @Entity()
 @Unique(["email"])
@@ -52,15 +53,15 @@ export class User {
 
     @Column()
     @IsNotEmpty()
-    dateOfBirth: Date;
+    birthday_date: Date;
 
     @Column()
     @IsNotEmpty()
-    dateInscription: Date;
+    inscription_date: Date;
 
     @Column()
     @IsNotEmpty()
-    dateLastConnexion: Date;
+    last_connexion: Date;
 
     @Column()
     @CreateDateColumn()
@@ -70,8 +71,11 @@ export class User {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(() => UserGames, userGames => userGames.game)
-    public userGames: UserGames[];
+    @OneToMany(() => User_Game, user_game => user_game.game)
+    public user_game: User_Game[];
+
+    @OneToMany(() => User_Trophy, user_trophy => user_trophy.trophy)
+    public user_trophy: User_Trophy[];
     
     @ManyToOne(() => Lobby, lobby => lobby.users)
     lobby: Lobby;
