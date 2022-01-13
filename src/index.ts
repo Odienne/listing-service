@@ -15,7 +15,7 @@ createConnection()
     app.use(bodyParser.json({limit: '10mb'}))
     app.use(bodyParser.urlencoded({limit: '10mb', extended: true}))
 
-    // Call midlewares
+    // Call middlewares
     app.use(cors());
     app.use(helmet());
     app.use(bodyParser.json());
@@ -26,8 +26,8 @@ createConnection()
     //Set all routes from routes folder
     app.use("/", routes);
 
-    app.listen(3000, () => {
-      console.log("Server started on port 3000!");
+    app.listen(3002, () => {
+      console.log("Server started on port 3002!");
     });
   })
   .catch(error => console.log(error));
