@@ -31,13 +31,13 @@ export class Item {
         nullable: true,
         default: null
     })
-    userId: number;
+    userId: string;
 
     @Column({
         nullable: true,
         default: null
     })
-    gameId: number;
+    gameId: string;
 
     @Column()
     @CreateDateColumn()
